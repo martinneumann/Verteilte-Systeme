@@ -1,2 +1,10 @@
 Themen:
 	-UDP
+	
+
+Aufgaben: 
+	
+	1 UDP-Client sicher machen -> select(), 3 Versuche
+	2 Datenaustausch: struct definieren -> .h-Datei
+	3 Logik: Client ist Sensor, Server protokolliert
+	4 Client kann in Kommandozeile den Server adressieren, main(...)
