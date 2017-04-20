@@ -65,12 +65,17 @@ int main() {
 		} else {
 		int i;
 		for (i = 0; i < 3; i++) {
+			if (!select(sockfd+1, &rfds, NULL, NULL, &timeoutTime)){
 			rc = sendto(sockfd, puffer, sizeof(puffer), 0, (struct sockaddr*)&myaddr, len);	
 			printf("Resending, try number %d.\n", i);
+			sleep(1);
+		} else {
+		break;
 		}
 		printf("Server not reachable.\n");
 		exit(1);
 	}
+}
 sleep(1);
 }
 
