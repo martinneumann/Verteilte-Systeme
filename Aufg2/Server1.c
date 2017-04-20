@@ -13,7 +13,7 @@ int main() {
 	int sockfd, sfd, len;
 	ssize_t rc=0;
 	struct sockaddr_in myaddr, src_addr;
-	char puffer[1500];	
+	char puffer[1500], recpuffer[1500];	
 	sockfd = socket(AF_INET, SOCK_DGRAM, 0);
 
 	if (sockfd == -1) {
@@ -35,12 +35,12 @@ int main() {
 	while(1) {
 	
 		len = sizeof(struct sockaddr_in);
-		rc = recvfrom(sockfd, puffer, sizeof(puffer), 0, (struct sockaddr*)&myaddr, &len);	
-		
-		while(1) {
-		strcpy(puffer,"HALLO JOSEF\n");	
+		rc = recvfrom(sockfd, recpuffer, sizeof(recpuffer), 0, (struct sockaddr*)&myaddr, &len);	
+		printf("Received: %s\n", recpuffer);
+
+		strcpy(puffer,recpuffer);	
 		sendto(sockfd, puffer, sizeof(puffer), 0, (struct sockaddr*)&myaddr, len);
-	}
+		printf("Sent: %s\n", puffer);	
 	}
 
 	
