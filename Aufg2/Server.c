@@ -36,11 +36,11 @@ int main() {
 	
 		len = sizeof(struct sockaddr_in);
 		rc = recvfrom(sockfd, recpuffer, sizeof(recpuffer), 0, (struct sockaddr*)&myaddr, &len);	
-		printf("Received: %s\n", recpuffer);
+		printf("Received:	%s\n", recpuffer);
 
 		strcpy(puffer,recpuffer);	
 		sendto(sockfd, puffer, sizeof(puffer), 0, (struct sockaddr*)&myaddr, len);
-		printf("Sent: %s\n", puffer);	
+		printf("Sent:		%s\n\n", puffer);	
 	}
 
 	

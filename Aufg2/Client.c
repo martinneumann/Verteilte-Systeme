@@ -11,18 +11,17 @@
 
 int main() {
 
-	int sockfd, len, num=0;
+	int sockfd, len, num=0, status = 0, i=0;
 	char numchar="0";
 	ssize_t rc=NULL, receivedDatagram=NULL;
 	struct sockaddr_in myaddr;
 	char puffer[1500] = "Datagram No: ", recpuffer[1500];	
+
 	sockfd = socket(AF_INET, SOCK_DGRAM, 0);
-	fd_set rfds;
+	fd_set rfds, CPrfds;	
 	FD_ZERO(&rfds);
 	FD_SET(sockfd, &rfds);	
 	struct timeval timeoutTime;
-	timeoutTime.tv_sec = 2;
-	timeoutTime.tv_usec = 0;
 	
 
 
@@ -47,37 +46,57 @@ int main() {
 	*/
 
 	while(1) {
-			
+		timeoutTime.tv_sec = 2;
+		timeoutTime.tv_usec = 0;
+		CPrfds = rfds;
+	
 		len = sizeof(struct sockaddr_in);
-		//snprintf(numstring,sizeof(numstring),"%d",num);
-		//strcat(puffer, numstring);
 		puffer[13] = numchar;
 		
-		num++;
-		numchar = num + '0';
+	
 		rc = sendto(sockfd, puffer, sizeof(puffer), 0, (struct sockaddr*)&myaddr, len);	
-				/* hier: warten auf input */	
-		if (select(sockfd+1, &rfds, NULL, NULL, &timeoutTime)) {		
+				
+		status = select(sockfd+1, &CPrfds, NULL, NULL, &timeoutTime);
+				
+		
+		if(status>0) {
+				
 			receivedDatagram = recvfrom(sockfd, recpuffer, sizeof(recpuffer), 0, (struct sockaddr*)&myaddr, &len);
 			printf("Sent:		%s\nReceived:	%s\n\n", puffer, recpuffer);	
-
+			if (num < 10) {	
+				num++;
+			} else {
+				num = 0;
+			}
+	
+			numchar = num + '0';
+		
+			
 		} else {
-		int i;
-		for (i = 0; i < 3; i++) {
-			if (!select(sockfd+1, &rfds, NULL, NULL, &timeoutTime)){
-			rc = sendto(sockfd, puffer, sizeof(puffer), 0, (struct sockaddr*)&myaddr, len);	
-			printf("Resending, try number %d.\n", i);
-			sleep(1);
-		} else {
-		break;
+		// server can't be reached
+			if (i < 3) {
+				sleep(1);
+				printf("Resending.\n");
+				i++;
+				continue;
+			} else {
+			printf("Server can't be reached.\n");
+			exit(EXIT_FAILURE);
+			}		
+			
 		}
-		printf("Server not reachable.\n");
-		exit(1);
-	}
-}
-sleep(1);
-}
 
+	
+				
+		
+	
+
+		}
+	
+	
+
+
+receivedDatagram = NULL;
 close(sockfd);
 
 exit(0);
